@@ -24,6 +24,10 @@ export default function ProductCard({
 }: ProductCardProps) {
   const navigate = useNavigate();
 
+  const handleProductClick = () => {
+    navigate(`/products/${id}`);
+  };
+
   return (
     <motion.div
       className={cn(
@@ -31,7 +35,7 @@ export default function ProductCard({
         className
       )}
       whileHover={{ y: -5 }}
-      onClick={() => navigate(`/products/${id}`)}
+      onClick={handleProductClick}
     >
       <div className="relative overflow-hidden">
         <motion.img

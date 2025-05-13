@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import ProductGrid from "@/components/ProductGrid";
+import ProductSection from "@/components/ProductSection";
 import { mockProducts } from "@/lib/mock-data";
 
 const Products = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"grid" | "sections">("grid");
 
   useEffect(() => {
     // Simulate loading delay
@@ -16,6 +18,15 @@ const Products = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Get unique categories from products
+  const categories = [...new Set(mockProducts.map(product => product.category))];
+
+  // Group products by category
+  const productsByCategory = categories.reduce((acc, category) => {
+    acc[category] = mockProducts.filter(product => product.category === category);
+    return acc;
+  }, {} as Record<string, typeof mockProducts>);
 
   return (
     <Layout>
@@ -30,6 +41,31 @@ const Products = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               استكشف مجموعتنا المتنوعة من الحرف اليدوية العربية الأصيلة
             </p>
+          </div>
+          
+          <div className="flex justify-center mb-8">
+            <div className="flex p-1 bg-muted rounded-full">
+              <button
+                className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                  viewMode === "grid" 
+                    ? "bg-craft-primary text-white" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setViewMode("grid")}
+              >
+                عرض الشبكة
+              </button>
+              <button
+                className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                  viewMode === "sections" 
+                    ? "bg-craft-primary text-white" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setViewMode("sections")}
+              >
+                عرض الأقسام
+              </button>
+            </div>
           </div>
           
           {isLoading ? (
@@ -47,11 +83,21 @@ const Products = () => {
                 />
               </div>
             </div>
-          ) : (
+          ) : viewMode === "grid" ? (
             <ProductGrid 
               products={mockProducts} 
               showFilters={true} 
             />
+          ) : (
+            <div>
+              {categories.map(category => (
+                <ProductSection
+                  key={category}
+                  category={category}
+                  products={productsByCategory[category]}
+                />
+              ))}
+            </div>
           )}
         </motion.div>
       </div>
