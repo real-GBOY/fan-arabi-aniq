@@ -1,13 +1,70 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+
+import Layout from "@/components/Layout";
+import HeroSection from "@/components/HeroSection";
+import FeaturedSection from "@/components/FeaturedSection";
+import ProductGrid from "@/components/ProductGrid";
+import CategoriesShowcase from "@/components/CategoriesShowcase";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import NewsletterSection from "@/components/NewsletterSection";
+import ContactSection from "@/components/ContactSection";
+
+import { mockProducts, mockCategories, mockTestimonials } from "@/lib/mock-data";
 
 const Index = () => {
+  // Smooth scroll to section when clicking on navigation links
+  useEffect(() => {
+    const handleSmoothScroll = (e: MouseEvent) => {
+      const target = e.target as HTMLAnchorElement;
+      
+      if (target.hash && target.hash.startsWith('#')) {
+        e.preventDefault();
+        
+        const targetElement = document.querySelector(target.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    };
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', handleSmoothScroll);
+    });
+
+    return () => {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.removeEventListener('click', handleSmoothScroll);
+      });
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      <HeroSection />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <FeaturedSection />
+        
+        <ProductGrid 
+          products={mockProducts.slice(0, 4)} 
+          title="منتجاتنا المميزة" 
+        />
+        
+        <CategoriesShowcase categories={mockCategories} />
+        
+        <TestimonialsSection testimonials={mockTestimonials} />
+        
+        <NewsletterSection />
+        
+        <ContactSection />
+      </motion.div>
+    </Layout>
   );
 };
 
